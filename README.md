@@ -1,1 +1,1 @@
-Personal library for aiding lua development in Stormworks
+Library for aiding lua development in Stormworks
