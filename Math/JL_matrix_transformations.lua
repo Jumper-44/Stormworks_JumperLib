@@ -145,6 +145,54 @@ function matrix_getRotAroundAbitraryAxis(angle, vec, _return)
 end
 ---@endsection
 
+---@section matrix_getPerspectiveProjection_facingY
+---Perspective Projection Matrix, in which camera is looking down the y-axis  
+---Projects directly to clip space and after perspective division then screen space is: x|y:coordinates [-1, 1], z:depth [0, 1]
+---@param n number near plane
+---@param f number far plane
+---@param r number right plane
+---@param l number left plane
+---@param t number top plane
+---@param b number buttom plane
+---@param _return? matrix4x4
+---@return any
+function matrix_getPerspectiveProjection_facingY(n, f, r, l, t, b, _return)
+    _return = matrix_init(4, 4, _return)
+    _return[1][1] = 2*n/(r-l)
+    _return[2][1] = -(r+l)/(r-l)
+    _return[2][2] = -(b+t)/(b-t)
+    _return[2][3] = f/(f-n)
+    _return[2][4] = 1
+    _return[3][2] = 2*n/(b-t)
+    _return[4][3] = -f*n/(f-n)
+    return _return
+end
+---@endsection
+
+---@section matrix_getPerspectiveProjection_facingZ
+---Perspective Projection Matrix, in which camera is looking down the z-axis  
+---Projects directly to clip space and after perspective division then screen space is: x|y:coordinates [-1, 1], z:depth [0, 1]
+---@param n number near plane
+---@param f number far plane
+---@param r number right plane
+---@param l number left plane
+---@param t number top plane
+---@param b number buttom plane
+---@param _return? matrix4x4
+---@return any
+function matrix_getPerspectiveProjection_facingZ(n, f, r, l, t, b, _return)
+    _return = matrix_init(4, 4, _return)
+    _return[1][1] = 2*n/(r-l)
+    _return[2][2] = 2*n/(b-t)
+    _return[3][1] = -(r+l)/(r-l)
+    _return[3][2] = -(b+t)/(b-t)
+    _return[3][3] = f/(f-n)
+    _return[3][4] = 1
+    _return[4][3] = -f*n/(f-n)
+    return _return
+end
+---@endsection
+
 
 
 
