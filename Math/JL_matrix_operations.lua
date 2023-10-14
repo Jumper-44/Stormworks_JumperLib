@@ -8,6 +8,7 @@ require('JumperLib.Math.JL_vector_operations')
 ---@alias matrix table<number, table<number, number>>
 ---@alias matrix2x2 matrix
 ---@alias matrix3x3 matrix
+---@alias matrix4x4 matrix
 
 ---@section matrix_init
 ---init matrix : m[column][row]
