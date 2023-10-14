@@ -305,7 +305,6 @@ function vec_ctos(a, temp)
 end
 ---@endsection
 
-
 ---@section vec_tolocal3d
 ---transposedMatrix-vector multiplication : _return = <b_x|b_y|b_z><sup>T</sup> * a  
 ---if matrix is orthonormal (i.e. rotation matrix) then the transpose is the same as inverse  
@@ -349,6 +348,27 @@ do
             _return
         )
     end
+end
+---@endsection
+
+---@section vec_lerp
+---comment
+---@param a vec
+---@param b vec
+---@param t number lerp value between 0->1
+---@param _return vec Cannot be *@param* startVec
+---@return any
+function vec_lerp(a, b, t, _return)
+    -- a + (b - a) * t
+    return
+    vec_add(
+        a,
+        vec_scale(
+            vec_sub(b, a, _return),
+            t,
+            _return),
+        _return
+    )
 end
 ---@endsection
 
