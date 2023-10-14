@@ -560,6 +560,38 @@ function matrix_multVec4d(m, v, _return)
 end
 ---@endsection
 
+---@section matrix_unpackRowMajor
+---https://en.wikipedia.org/wiki/Row-_and_column-major_order
+---@param m matrix
+---@param _return vec
+---@overload fun(m:matrix, _return:vec):vec
+---@return vec
+function matrix_unpackRowMajor(m, _return)
+    for i = 1, #m[1] do
+        for j = 1, #m do
+            _return[(i-1)*#m + j] = m[j][i]
+        end
+    end
+    return _return
+end
+---@endsection
+
+---@section matrix_unpackColumnMajor
+---https://en.wikipedia.org/wiki/Row-_and_column-major_order
+---@param m matrix
+---@param _return vec
+---@overload fun(m:matrix, _return:vec):vec
+---@return vec
+function matrix_unpackColumnMajor(m, _return)
+    for i = 1, #m do
+        for j = 1, #m[1] do
+            _return[(i-1)*#m[1] + j] = m[i][j]
+        end
+    end
+    return _return
+end
+---@endsection
+
 ---@section matrix_getRotX
 ---Get 3d rotation matrix around x-axis
 ---@param angle number
@@ -706,7 +738,7 @@ end
 
 
 ---@section __vector_matrix_DEBUG__
--- [[ debug1
+--[[ debug1
 for t = 1, 5 do
     local t1, t2, t3
 
@@ -736,7 +768,7 @@ for t = 1, 5 do
 end
 --]]
 
--- [[ debug2
+--[[ debug2
 for t = 1, 5 do
     local t1, t2
 
