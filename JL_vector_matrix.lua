@@ -438,9 +438,10 @@ end
 
 --#region matrix
 
----@alias matrix table
----@alias matrix2x2 table
----@alias matrix3x3 table
+---matrices are read by m[column][row]
+---@alias matrix table<number, table<number, number>>
+---@alias matrix2x2 matrix
+---@alias matrix3x3 matrix
 
 ---@section matrix_init
 ---init matrix : m[column][row]
@@ -750,7 +751,7 @@ end
 
 
 ---@section __vector_matrix_DEBUG__
---[[ debug1
+-- [[ debug1
 for t = 1, 5 do
     local t1, t2, t3
 
@@ -780,7 +781,7 @@ for t = 1, 5 do
 end
 --]]
 
---[[ debug2
+-- [[ debug2
 for t = 1, 5 do
     local t1, t2
 
