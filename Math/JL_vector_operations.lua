@@ -24,35 +24,50 @@ end
 ---@endsection
 
 ---@section vec_init2d
----Init 2d vector with array part
+---Init 2d vector
+---@param _return? vec
 ---@param x? number
 ---@param y? number
 ---@return vec2d
-function vec_init2d(x, y)
-    return {x or 0, y or 0}
+function vec_init2d(_return, x, y)
+    _return = _return or {}
+    _return[1] = x or 0
+    _return[2] = y or 0
+    return _return
 end
 ---@endsection
 
 ---@section vec_init3d
----Init 3d vector with array part
+---Init 3d vector
+---@param _return? vec
 ---@param x? number
 ---@param y? number
 ---@param z? number
 ---@return vec3d
-function vec_init3d(x, y, z)
-    return {x or 0, y or 0, z or 0}
+function vec_init3d(_return, x, y, z)
+    _return = _return or {}
+    _return[1] = x or 0
+    _return[2] = y or 0
+    _return[3] = z or 0
+    return _return
 end
 ---@endsection
 
 ---@section vec_init4d
----Init 3d vector with array part
+---Init 3d vector
+---@param _return? vec
 ---@param x? number
 ---@param y? number
 ---@param z? number
 ---@param w? number
 ---@return vec4d
-function vec_init4d(x, y, z, w)
-    return {x or 0, y or 0, z or 0, w or 0}
+function vec_init4d(_return, x, y, z, w)
+    _return = _return or {}
+    _return[1] = x or 0
+    _return[2] = y or 0
+    _return[3] = z or 0
+    _return[4] = w or 0
+    return _return
 end
 ---@endsection
 
