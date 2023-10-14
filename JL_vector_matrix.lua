@@ -122,6 +122,18 @@ function vec_init3d(x, y, z)
 end
 ---@endsection
 
+---@section vec_init4d
+---Init 3d vector with array part
+---@param x? number
+---@param y? number
+---@param z? number
+---@param w? number
+---@return vec4d
+function vec_init4d(x, y, z, w)
+    return {x or 0, y or 0, z or 0, w or 0}
+end
+---@endsection
+
 ---@section vec_init
 ---comment
 ---@param rows integer
