@@ -28,9 +28,9 @@ end
 ---@endsection
 
 ---@section getNumber3
----@param x integer
----@param y integer
----@param z integer
+---@param x? integer
+---@param y? integer
+---@param z? integer
 ---@return number, number, number
 function getNumber3(x, y, z)
     return input.getNumber(x), input.getNumber(y), input.getNumber(z)
