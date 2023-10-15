@@ -10,13 +10,13 @@ require('JumperLib.DataStructures.JL_list')
 ---@param ... table -- expects ' {x,x,...,x},{y,y,...,y}, ..., {n,n,...,n} '
 ---@return IKDTree
 IKDTree = function(...)
-    local k_dimensions, len2, nodes, pointID, points, insertRecursive, removeRecursive, nearestPoints, maxNeighbors, insertSort, nearestNeighborsRecursive
+    local k_dimensions, IKDTree_len2, nodes, pointBuffer, pointID, points, insertRecursive, removeRecursive, nearestPoints, maxNeighbors, insertSort, nearestNeighborsRecursive
 
     ---@class IKDTree
-    ---@field len2 fun(pointA: integer, pointB: integer)
+    ---@field IKDTree_len2 fun(pointA_Buffer: table, pointB_ID: integer)
     ---@field IKDTree_insert fun(point: integer)
     ---@field IKDTree_remove fun(point: integer)
-    ---@field IKDTree_nearestNeighbors fun(point: integer, maxReturnedNeighbors: integer): table
+    ---@field IKDTree_nearestNeighbors fun(point: table, maxReturnedNeighbors: integer): table
     ---@field pointsLen2 table
     local IKD_Tree, nSplit, nLeft, nRight, nPoints, newNodeBuffer, sortFunctions, pointsLen2 = {...}, {}, {}, {}, {}, {0, 0, 0, {}}, {}, {}
 
@@ -28,20 +28,6 @@ IKDTree = function(...)
         nPoints  -- pointID table or false, if table then it is a leaf node
     })
     nodes.insert(newNodeBuffer)
-
-    ---Returns the squared length between two points
-    ---@param pointA integer
-    ---@param pointB integer
-    ---@return number
-    function len2(pointA, pointB)
-        local sum = 0
-        for i = 1, k_dimensions do
-            local dis = IKD_Tree[i][pointA] - IKD_Tree[i][pointB]
-            sum = sum + dis*dis
-        end
-        return sum
-    end
-    IKD_Tree.len2 = len2
 
     ---@section IKDTree_insert
     for cd = 1, k_dimensions do
@@ -111,6 +97,21 @@ IKDTree = function(...)
     end
     ---@endsection
 
+    ---@section IKDTree_len2
+    ---@param pointA_buffer table
+    ---@param pointB_ID integer
+    ---@return number
+    function IKDTree_len2(pointA_buffer, pointB_ID)
+        local sum = 0
+        for i = 1, k_dimensions do
+            local dis = pointA_buffer[i] - IKD_Tree[i][pointB_ID]
+            sum = sum + dis*dis
+        end
+        return sum
+    end
+    IKD_Tree.IKDTree_len2 = IKDTree_len2
+    ---@endsection
+
     ---@section IKDTree_nearestNeighbors
     IKD_Tree.pointsLen2 = pointsLen2
 
@@ -132,7 +133,7 @@ IKDTree = function(...)
         points = nPoints[nodeID]
         if points then
             for i = 1, #points do
-                pointsLen2[points[i]] = len2(pointID, points[i])
+                pointsLen2[points[i]] = IKDTree_len2(pointBuffer, points[i])
                 if #nearestPoints < maxNeighbors then
                     insertSort(points[i])
                 else
@@ -143,12 +144,12 @@ IKDTree = function(...)
                 end
             end
         else
-            if IKD_Tree[cd][pointID] < nSplit[nodeID] then
+            if pointBuffer[cd] < nSplit[nodeID] then
                 nextBranch, ortherBranch = ortherBranch, nextBranch
             end
 
             nearestNeighborsRecursive(nextBranch, depth+1)
-            local dist = IKD_Tree[cd][pointID] - nSplit[nodeID]
+            local dist = pointBuffer[cd] - nSplit[nodeID]
             if #nearestPoints < maxNeighbors or pointsLen2[nearestPoints[maxNeighbors]] >= dist*dist then
                 nearestNeighborsRecursive(ortherBranch, depth+1)
             end
@@ -156,12 +157,12 @@ IKDTree = function(...)
     end
 
     ---Returns the nearest point(s) in k-d tree to param point up to param maxNeighbors
-    ---@param point integer
+    ---@param point table
     ---@param maxReturnedNeighbors integer
     ---@return table
     IKD_Tree.IKDTree_nearestNeighbors = function(point, maxReturnedNeighbors)
         nearestPoints = {}
-        pointID = point
+        pointBuffer = point
         maxNeighbors = maxReturnedNeighbors
         nearestNeighborsRecursive(1, 0)
         return nearestPoints
@@ -333,7 +334,7 @@ end
 
 
 ---@section __IKDTree_DEBUG__
--- [[
+--[[
 do
     local s1, s2 = 1e6, 5e5
     local pointBuffer = {}
@@ -363,31 +364,77 @@ do
 
 
     print("--- nearest neighbor ---")
-    local time = {}
-    for k = 1, 10 do -- IKDTree nearest neighbor
-        local p = points.insert({(rand()-.5)*100, (rand()-.5)*100, (rand()-.5)*100})
+--    local time = {}
+--    for k = 1, 10 do -- IKDTree nearest neighbor
+--        pointBuffer[1] = (rand()-.5)*100
+--        pointBuffer[2] = (rand()-.5)*100
+--        pointBuffer[3] = (rand()-.5)*100
+--
+--        t1 = os.clock()
+--        local tree_n = t.IKDTree_nearestNeighbors(pointBuffer, 100)
+--        t2 = os.clock()
+--
+--        local best, brute_n = 0x7fffffffffffffff, nil
+--        for i = 1, s2 do
+--            if t.IKDTree_len2(pointBuffer, i) < best then
+--                best = t.IKDTree_len2(pointBuffer, i)
+--                brute_n = i
+--            end
+--        end
+--
+--        time[k] = t2-t1
+--        print("tree: "..t.IKDTree_len2(pointBuffer, tree_n[1])..", brute: "..best..", is equal: "..tostring(tree_n[1]==brute_n)..", time: "..time[k])
+--    end
+--
+--    local avg = 0
+--    for k = 1, #time do
+--        avg = avg + time[k]/#time
+--    end
+--    print("100 nearest, iterations: "..#time..", avg: "..avg)
 
-        t1 = os.clock()
-        local tree_n = t.IKDTree_nearestNeighbors(p, 100)
-        t2 = os.clock()
+    t1 = os.clock()
+    for k = 1, 1e4 do
+        pointBuffer[1] = (rand()-.5)*100
+        pointBuffer[2] = (rand()-.5)*100
+        pointBuffer[3] = (rand()-.5)*100
 
-        local best, brute_n = 0x7fffffffffffffff, nil
-        for i = 1, s2 do
-            if t.len2(p, i) < best then
-                best = t.len2(p, i)
-                brute_n = i
-            end
-        end
-
-        time[k] = t2-t1
-        print("tree: "..t.len2(p, tree_n[1])..", brute: "..best..", is equal: "..tostring(tree_n[1]==brute_n)..", time: "..time[k])
+        t.IKDTree_nearestNeighbors(pointBuffer, 1)
     end
+    t2 = os.clock()
+    print("1 nearest, 1e4: "..(t2-t1))
 
-    local avg = 0
-    for k = 1, #time do
-        avg = avg + time[k]/#time
+    t1 = os.clock()
+    for k = 1, 1e4 do
+        pointBuffer[1] = (rand()-.5)*100
+        pointBuffer[2] = (rand()-.5)*100
+        pointBuffer[3] = (rand()-.5)*100
+
+        t.IKDTree_nearestNeighbors(pointBuffer, 5)
     end
-    print("iterations: "..#time..", avg: "..avg)
+    t2 = os.clock()
+    print("5 nearest, 1e4: "..(t2-t1))
+
+    t1 = os.clock()
+    for k = 1, 1e4 do
+        pointBuffer[1] = (rand()-.5)*100
+        pointBuffer[2] = (rand()-.5)*100
+        pointBuffer[3] = (rand()-.5)*100
+
+        t.IKDTree_nearestNeighbors(pointBuffer, 10)
+    end
+    t2 = os.clock()
+    print("10 nearest, 1e4: "..(t2-t1))
+
+    t1 = os.clock()
+    for k = 1, 1e4 do
+        pointBuffer[1] = (rand()-.5)*100
+        pointBuffer[2] = (rand()-.5)*100
+        pointBuffer[3] = (rand()-.5)*100
+
+        t.IKDTree_nearestNeighbors(pointBuffer, 25)
+    end
+    t2 = os.clock()
+    print("25 nearest, 1e4: "..(t2-t1))
 end
 --]]
 ---@endsection
