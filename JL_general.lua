@@ -12,19 +12,30 @@ tau = math.pi*2
 ---@param s number
 ---@param l number
 ---@return number
-clamp = function(x,s,l)
+function clamp(x,s,l)
     return x < s and s or x > l and l or x
 end
 ---@endsection
 
 ---@section getNumber
-getNumber = function(...)
+---@param ... integer
+---@return number
+function getNumber(...)
     local r = {...}
     for i = 1, #r do r[i] = input.getNumber(r[i]) end
     return table.unpack(r)
 end
 ---@endsection
 
+---@section getNumber3
+---@param x integer
+---@param y integer
+---@param z integer
+---@return number, number, number
+function getNumber3(x, y, z)
+    return input.getNumber(x), input.getNumber(y), input.getNumber(z)
+end
+---@endsection
 
 
 
