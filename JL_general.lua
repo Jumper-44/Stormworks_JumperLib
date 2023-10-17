@@ -17,10 +17,10 @@ function clamp(x,s,l)
 end
 ---@endsection
 
----@section getNumber
+---@section getMultipleNumber
 ---@param ... integer
 ---@return number
-function getNumber(...)
+function getMultipleNumber(...)
     local r = {...}
     for i = 1, #r do r[i] = input.getNumber(r[i]) end
     return table.unpack(r)
