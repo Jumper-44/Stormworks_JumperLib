@@ -27,7 +27,7 @@ IKDTree = function(...)
         nRight, -- right node_id
         nPoints  -- pointID table or false, if table then it is a leaf node
     })
-    nodes.insert(newNodeBuffer)
+    nodes.list_insert(newNodeBuffer)
 
     ---@section IKDTree_insert
     for cd = 1, k_dimensions do
@@ -45,9 +45,9 @@ IKDTree = function(...)
                 --Remove points table reference from current node and reuse it in left node and init new table in right node and move the right half of points into right node
                 nPoints[nodeID] = false
                 newNodeBuffer[4] = points
-                nLeft[nodeID] = nodes.insert(newNodeBuffer)
+                nLeft[nodeID] = nodes.list_insert(newNodeBuffer)
                 newNodeBuffer[4] = {}
-                nRight[nodeID] = nodes.insert(newNodeBuffer)
+                nRight[nodeID] = nodes.list_insert(newNodeBuffer)
                 for i = 9, 16 do
                     newNodeBuffer[4][i - 8] = points[i]
                     points[i] = nil
@@ -173,6 +173,10 @@ IKDTree = function(...)
 end
 ---@endsection _IKDTREE_
 
+
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 
 
 ---kd-tree that does table references in nodes and for points
@@ -349,7 +353,7 @@ do
         pointBuffer[1] = (rand()-.5)*100
         pointBuffer[2] = (rand()-.5)*100
         pointBuffer[3] = (rand()-.5)*100
-        points.insert(pointBuffer)
+        points.list_insert(pointBuffer)
     end
     t1 = os.clock()
     for i = 1, s1 do
