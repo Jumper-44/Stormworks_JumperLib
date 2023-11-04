@@ -62,6 +62,7 @@ function queue()
     ---@endsection
 
     ---@section queue_size
+    ---@return integer
     function queue.queue_size()
         return queue.last - queue.first + 1
     end
