@@ -4,7 +4,6 @@
 
 require('JumperLib.DataStructures.JL_list')
 ---kd-tree with focus on using integer ID for references rather than tables, but tables are still used in leaf nodes.  
----Full class minimized estimated to 1317 char  
 ---Requires 'JumperLib.DataStructures.JL_list'  
 ---@section IKDTree 1 _IKDTREE_
 ---@param ... table -- expects ' {x,x,...,x},{y,y,...,y}, ..., {n,n,...,n} '
