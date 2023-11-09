@@ -96,7 +96,7 @@ end
 ---@endsection
 
 ---@section matrix_getRotZXY
----Get 3d rotation matrix of the order ZYX, intended when z-axis is up  
+---Get 3d rotation matrix of the order ZXY, intended when z-axis is up  
 ---https://www.songho.ca/opengl/gl_anglestoaxes.html
 ---@param angleX number
 ---@param angleY number
