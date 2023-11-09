@@ -185,8 +185,8 @@ end
 
 ---@section vec_det2d
 ---comment
----@param a vec
----@param b vec
+---@param a vec2
+---@param b vec2
 ---@return number
 function vec_det2d(a, b)
     return a[1]*b[2] - a[2]*b[1]
@@ -194,10 +194,10 @@ end
 ---@endsection
 
 ---@section vec_det3d
----comment
----@param a vec
----@param b vec
----@param c vec
+---3D determinant can also be calculated by: v1 • (v2 × v3)
+---@param a vec3
+---@param b vec3
+---@param c vec3
 ---@return number
 function vec_det3d(a, b, c)
     return a[1]*b[2]*c[3] + b[1]*c[2]*a[3] + c[1]*a[2]*b[3] - c[1]*b[2]*a[3] - b[1]*a[2]*c[3] - a[1]*c[2]*b[3]
