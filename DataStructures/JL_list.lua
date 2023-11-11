@@ -14,6 +14,7 @@ function list(elements, removed_id, id)
     ---@class list
     ---@field list_insert fun(new_elements: table):integer
     ---@field list_remove fun(index: integer)
+    ---@field removed_id table
 
     removed_id = {}
     elements.removed_id = removed_id -- public access so function list_remove can be inlined if only used once, for char reduction
