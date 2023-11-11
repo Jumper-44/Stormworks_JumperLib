@@ -16,6 +16,7 @@ function list(elements, removed_id, id)
     ---@field list_remove fun(index: integer)
 
     removed_id = {}
+    elements.removed_id = removed_id -- public access so function list_remove can be inlined if only used once, for char reduction
 
     ---@section list_insert
     ---@param new_elements table new_elements[1] must not be nil, as it relies on #elements[1] to get length
