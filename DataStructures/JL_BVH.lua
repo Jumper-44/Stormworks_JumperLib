@@ -2,7 +2,7 @@
 -- GitHub: https://github.com/Jumper-44
 -- MIT License at end of this file
 
-require("DataStructures.JL_list")
+require("JumperLib.DataStructures.JL_list")
 
 ---@section BVH_AABB 1 _BVH_AABB_
 ---@class BoundingVolumeHierarchyAABB
@@ -198,6 +198,7 @@ end
 
 
 ---@section __DEBUG_BVH_AABB__
+--[[
 do
     local bvh = BVH_AABB()
     local AABB_minX, AABB_minY, AABB_minZ, AABB_maxX, AABB_maxY, AABB_maxZ, BVH_ID = {},{},{}, {},{},{}, {}
@@ -252,6 +253,7 @@ do
     print("init time2: "..(t2-t1))
     print(bvh.BVH_treeCost()) -- expected to be the same as earlier BVH.treeCost print
 end
+--]]
 ---@endsection
 
 
