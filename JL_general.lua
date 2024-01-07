@@ -38,6 +38,35 @@ end
 ---@endsection
 
 
+---@section pack_uint16_pair_to_float
+---Useful for encoding/packing 2 uint16 into a float representation, such that it can be outputtet with composite  
+---and be decoded/unpacked by unpack_float_to_uint16_pair(float)  
+---  
+---Note that there are 256 integers that cannot be converted to float and vice versa,  
+---which is reflected with 'b' parameter, which range is 256 less than 'a'.
+---@param a integer range [0, 2^16-1]
+---@param b integer range [0, 2^16-257]
+---@return number
+function pack_uint16_pair_to_float(a, b)
+    return ( ('f'):unpack(('I2I2'):pack(a, b + b//32640*64)) )
+end
+---@endsection
+
+---@section unpack_float_to_uint16_pair
+---@param a number pack_uint16_pair_to_float(a, b)
+---@param b nil local var
+---@overload fun(a: number): int16: integer, partial_int16: integer
+---@return integer uint16 range [0, 2^16-1]
+---@return integer partial_uint16 range [0, 2^16-257]
+function unpack_float_to_uint16_pair(a, b)
+    a, b = ('I2I2'):unpack(('f'):pack(a))
+    return a, b - b//32704*64
+end
+---@endsection
+
+
+
+
 
 -- MIT License
 -- 
