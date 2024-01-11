@@ -9,7 +9,7 @@ require('JumperLib.DataStructures.JL_list')
 ---@param ... table -- expects ' {x,x,...,x},{y,y,...,y}, ..., {n,n,...,n} '
 ---@return IKDTree
 IKDTree = function(...)
-    local k_dimensions, IKDTree_len2, nodes, pointBuffer, pointID, points, insertRecursive, removeRecursive, nearestPoints, maxNeighbors, insertSort, nearestNeighborsRecursive, nearestNeighborRecursive, bestPointID, bestLen2, dist
+    local k_dimensions, IKDTree_len2, nodes, pointBuffer, points, sortFunction, nearestPoints, maxNeighbors, insertSort, nearestNeighborsRecursive, nearestNeighborRecursive, bestPointID, bestLen2, dist, nodeID, cd, depth
 
     ---@class IKDTree
     ---@field IKDTree_len2 fun(pointA_Buffer: table, pointB_ID: integer)
@@ -18,7 +18,7 @@ IKDTree = function(...)
     ---@field IKDTree_nearestNeighbors fun(point: table, maxReturnedNeighbors: integer): table
     ---@field IKDTree_nearestNeighbor fun(point: table): integer, number
     ---@field pointsLen2 table
-    local IKD_Tree, nSplit, nLeft, nRight, nPoints, newNodeBuffer, sortFunctions, pointsLen2 = {...}, {}, {}, {}, {}, {0, 0, 0, {}}, {}, {}
+    local IKD_Tree, nSplit, nLeft, nRight, nPoints, newNodeBuffer, pointsLen2 = {...}, {}, {}, {}, {}, {0, 0, 0, {}}, {}
 
     k_dimensions = #IKD_Tree
     nodes = list({
@@ -30,73 +30,66 @@ IKDTree = function(...)
     nodes.list_insert(newNodeBuffer)
 
     ---@section IKDTree_insert
-    for cd = 1, k_dimensions do
-        sortFunctions[cd] = function(a, b) return IKD_Tree[cd][a] < IKD_Tree[cd][b] end
-    end
-
-    function insertRecursive(nodeID, cd, depth)
-        points = nPoints[nodeID]
-        if points then  -- leaf node?
-            points[#points+1] = pointID
-            if #points == 16 then -- Split node when it contains 16 points
-                table.sort(points, sortFunctions[cd])
-                nSplit[nodeID] = 0.5 * (IKD_Tree[cd][points[8]] + IKD_Tree[cd][points[9]])
-
-                --Remove points table reference from current node and reuse it in left node and init new table in right node and move the right half of points into right node
-                nPoints[nodeID] = false
-                newNodeBuffer[4] = points
-                nLeft[nodeID] = nodes.list_insert(newNodeBuffer)
-                newNodeBuffer[4] = {}
-                nRight[nodeID] = nodes.list_insert(newNodeBuffer)
-                for i = 9, 16 do
-                    newNodeBuffer[4][i - 8] = points[i]
-                    points[i] = nil
-                end
-            end
-        else -- is internal node and therefore search further down the tree
-            return insertRecursive(
-                IKD_Tree[cd][pointID] < nSplit[nodeID] and nLeft[nodeID] or nRight[nodeID],
-                depth % k_dimensions + 1,
-                depth + 1
-            )
-        end
-    end
+    sortFunction = function(a, b) return IKD_Tree[cd][a] < IKD_Tree[cd][b] end
 
     ---Inserts a point into the k-d tree
-    ---@param point integer
-    IKD_Tree.IKDTree_insert = function(point)
-        pointID = point
-        insertRecursive(1, 1, 1)
+    ---@param pointID integer
+    IKD_Tree.IKDTree_insert = function(pointID)
+        nodeID = 1
+        cd     = 1
+        depth  = 1
+
+        repeat
+            points = nPoints[nodeID]
+            if points then  -- leaf node?
+                points[#points+1] = pointID
+                if #points == 16 then -- Split node when it contains 16 points
+                    table.sort(points, sortFunction)
+                    nSplit[nodeID] = 0.5 * (IKD_Tree[cd][points[8]] + IKD_Tree[cd][points[9]])
+
+                    --Remove points table reference from current node and reuse it in left node and init new table in right node and move the right half of points into right node
+                    nPoints[nodeID] = false
+                    newNodeBuffer[4] = points
+                    nLeft[nodeID] = nodes.list_insert(newNodeBuffer)
+                    newNodeBuffer[4] = {}
+                    nRight[nodeID] = nodes.list_insert(newNodeBuffer)
+                    for i = 9, 16 do
+                        newNodeBuffer[4][i - 8] = points[i]
+                        points[i] = nil
+                    end
+                end
+            else -- is internal node and therefore search further down the tree
+                nodeID = IKD_Tree[cd][pointID] < nSplit[nodeID] and nLeft[nodeID] or nRight[nodeID]
+                cd     = depth % k_dimensions + 1
+                depth  = depth + 1
+            end
+        until points
     end
     ---@endsection
 
     ---@section IKDTree_remove
-    ---@param nodeID integer
-    ---@param cd integer
-    ---@param depth integer
-    function removeRecursive(nodeID, cd, depth)
-        points = nPoints[nodeID]
-        if points then -- leaf node?
-            for i = 1, #points do
-                if pointID == points[i] then
-                    points[i] = points[#points]
-                    points[#points] = nil
-                end
-            end
-        else -- is internal node and therefore search further down the tree
-            return removeRecursive(
-            IKD_Tree[cd][pointID] < nSplit[nodeID] and nLeft[nodeID] or nRight[nodeID],
-            depth % k_dimensions + 1,
-            depth + 1
-        )
-        end
-    end
-
     ---Finds leaf containing pointID and removes it from leaf.
-    ---@param point table
-    IKD_Tree.IKDTree_remove = function(point)
-        pointID = point
-        removeRecursive(1, 1, 1)
+    ---@param pointID table
+    IKD_Tree.IKDTree_remove = function(pointID)
+        nodeID = 1
+        cd     = 1
+        depth  = 1
+
+        repeat
+            points = nPoints[nodeID]
+            if points then -- leaf node?
+                for i = 1, #points do
+                    if pointID == points[i] then
+                        points[i] = points[#points]
+                        points[#points] = nil
+                    end
+                end
+            else -- is internal node and therefore search further down the tree
+                nodeID = IKD_Tree[cd][pointID] < nSplit[nodeID] and nLeft[nodeID] or nRight[nodeID]
+                cd     = depth % k_dimensions + 1
+                depth  = depth + 1
+            end
+        until points
     end
     ---@endsection
 
@@ -384,7 +377,7 @@ end
 
 
 ---@section __IKDTree_DEBUG__
---[[
+-- [[
 do
     local s1, s2 = 1e6, 5e5
     local pointBuffer = {}
