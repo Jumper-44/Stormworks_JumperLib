@@ -228,7 +228,7 @@ end
 ---@param _return vec
 ---@return any
 function vec_normalize(a, _return)
-    return vec_scale(a, vec_len(a), _return)
+    return vec_scale(a, 1/vec_len(a), _return)
 end
 ---@endsection
 
